@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AcessaMap</title>
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+</head>
+
+<body data-perfil="{{ perfil }}">
+
+    <h1>AcessaMap</h1>
+
+    <p>
+        Perfil selecionado:
+        <strong>{{ perfil }}</strong>
+    </p>
+
+    <a href="/">
+        Trocar necessidade
+    </a>
+
+    <h2>Mapa de Brasília</h2>
+
+    <div id="mapa"></div>
+
+
+    <h2>Assistente AcessaMap</h2>
+
+    <div id="chat">
+        <p>🤖 Olá! Como posso ajudar?</p>
+    </div>
+
+    <input
+        id="mensagem"
+        type="text"
+        placeholder="Digite sua pergunta..."
+    >
+
+    <button id="enviar">
+        Enviar
+    </button>
+
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="/static/main.js"></script>
+
+</body>
+
+</html>

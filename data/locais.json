@@ -1,0 +1,91 @@
+[
+    {
+        "id": 1,
+        "nome": "ParkShopping",
+        "latitude": -15.8336,
+        "longitude": -47.9555,
+        "dados_simulados": true,
+
+        "cadeirante": {
+            "entrada_acessivel": true,
+            "rampa": true,
+            "elevador": true,
+            "banheiro_acessivel": true,
+            "vaga_reservada": true
+        },
+
+        "cego": {
+            "piso_tatil": true,
+            "braille": true,
+            "sinal_sonoro": true,
+            "mapa_tatil": false
+        },
+
+        "tea": {
+            "ambiente_tranquilo": false,
+            "atendimento_prioritario": true,
+            "area_descanso": true,
+            "iluminacao_intensa": true
+        }
+    },
+
+    {
+        "id": 2,
+        "nome": "Brasília Shopping",
+        "latitude": -15.7892,
+        "longitude": -47.8839,
+        "dados_simulados": true,
+
+        "cadeirante": {
+            "entrada_acessivel": true,
+            "rampa": true,
+            "elevador": true,
+            "banheiro_acessivel": true,
+            "vaga_reservada": true
+        },
+
+        "cego": {
+            "piso_tatil": true,
+            "braille": false,
+            "sinal_sonoro": true,
+            "mapa_tatil": false
+        },
+
+        "tea": {
+            "ambiente_tranquilo": false,
+            "atendimento_prioritario": true,
+            "area_descanso": true,
+            "iluminacao_intensa": true
+        }
+    },
+
+    {
+        "id": 3,
+        "nome": "Conjunto Nacional",
+        "latitude": -15.7913,
+        "longitude": -47.8828,
+        "dados_simulados": true,
+
+        "cadeirante": {
+            "entrada_acessivel": true,
+            "rampa": true,
+            "elevador": true,
+            "banheiro_acessivel": true,
+            "vaga_reservada": false
+        },
+
+        "cego": {
+            "piso_tatil": true,
+            "braille": true,
+            "sinal_sonoro": false,
+            "mapa_tatil": false
+        },
+
+        "tea": {
+            "ambiente_tranquilo": false,
+            "atendimento_prioritario": true,
+            "area_descanso": false,
+            "iluminacao_intensa": true
+        }
+    }
+]
