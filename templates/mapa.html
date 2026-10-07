@@ -3,59 +3,328 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>AcessaMap</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
+    <title>AcessaMap - Mapa</title>
+
+    <!-- Leaflet -->
     <link
         rel="stylesheet"
         href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     >
 
+    <!-- CSS -->
     <link
         rel="stylesheet"
-        href="/static/style.css"
+        href="{{ url_for('static', path='style.css') }}"
     >
 </head>
 
-<body data-perfil="{{ perfil }}">
 
-    <h1>AcessaMap</h1>
+<body data-perfis="{{ perfis | join(',') }}">
 
-    <p>
-        Perfil selecionado:
-        <strong>{{ perfil }}</strong>
-    </p>
+    <!-- ==================================================
+         CABEÇALHO
+    =================================================== -->
 
-    <a href="/">
-        Trocar necessidade
-    </a>
+    <header class="topo">
 
-    <h2>Mapa de Brasília</h2>
+        <div class="logo-area">
 
-    <div id="mapa"></div>
+            <div class="logo-icone">
+                A
+            </div>
 
+            <div>
+                <h1>AcessaMap</h1>
 
-    <h2>Assistente AcessaMap</h2>
+                <span>
+                    Acessibilidade ao seu alcance
+                </span>
+            </div>
 
-    <div id="chat">
-        <p>🤖 Olá! Como posso ajudar?</p>
-    </div>
-
-    <input
-        id="mensagem"
-        type="text"
-        placeholder="Digite sua pergunta..."
-    >
-
-    <button id="enviar">
-        Enviar
-    </button>
+        </div>
 
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <!-- PERFIS ESCOLHIDOS -->
 
-    <script src="/static/main.js"></script>
+        <div class="perfis-ativos">
+
+            {% if perfis %}
+
+                {% for perfil in perfis %}
+
+                    <span class="perfil-chip">
+
+                        {% if perfil == "cadeirante" %}
+
+                            ♿ Cadeirante
+
+                        {% elif perfil == "cego" %}
+
+                            👁 Pessoa cega
+
+                        {% elif perfil == "tea" %}
+
+                            🧩 TEA
+
+                        {% else %}
+
+                            {{ perfil }}
+
+                        {% endif %}
+
+                    </span>
+
+                {% endfor %}
+
+            {% endif %}
+
+        </div>
+
+    </header>
+
+
+    <!-- ==================================================
+         CONTEÚDO
+    =================================================== -->
+
+    <main class="conteudo">
+
+
+        <!-- ==================================================
+             PAINEL ESQUERDO
+        =================================================== -->
+
+        <aside class="painel">
+
+            <h2>
+                Encontrar locais
+            </h2>
+
+
+            <p class="painel-subtitulo">
+                Encontre locais acessíveis em Brasília.
+            </p>
+
+
+            <!-- PESQUISA -->
+
+            <div class="pesquisa">
+
+                <input
+                    type="text"
+                    id="campo-pesquisa"
+                    placeholder="Pesquisar local..."
+                    autocomplete="off"
+                >
+
+
+                <button
+                    id="botao-pesquisar"
+                    type="button"
+                >
+                    Buscar
+                </button>
+
+            </div>
+
+
+            <!-- ==================================================
+                 INFORMAÇÕES
+            =================================================== -->
+
+            <section
+                id="informacoes-local"
+                class="informacoes-local"
+            >
+
+                <h3>
+                    Informações do local
+                </h3>
+
+
+                <div id="dados-local">
+
+                    <div class="estado-inicial">
+
+                        <div class="estado-inicial-icone">
+                            📍
+                        </div>
+
+
+                        <p>
+                            Pesquise um local e clique em um
+                            marcador para visualizar suas
+                            informações de acessibilidade.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </aside>
+
+
+        <!-- ==================================================
+             ÁREA PRINCIPAL
+        =================================================== -->
+
+        <section class="area-principal">
+
+
+            <!-- MAPA -->
+
+            <div class="area-mapa">
+
+                <div id="mapa"></div>
+
+            </div>
+
+
+            <!-- ==================================================
+                 AGENTE IA
+            =================================================== -->
+
+            <details class="agente-ia">
+
+
+                <!-- BOTÃO -->
+
+                <summary
+                    class="botao-agente"
+                    aria-label="Abrir AcessaMap IA"
+                >
+
+                    <span class="icone-agente">
+                        IA
+                    </span>
+
+                </summary>
+
+
+                <!-- JANELA -->
+
+                <div class="janela-agente">
+
+
+                    <!-- CABEÇALHO -->
+
+                    <div class="agente-header">
+
+                        <div class="agente-identidade">
+
+                            <div class="agente-avatar">
+                                IA
+                            </div>
+
+
+                            <div>
+
+                                <strong>
+                                    AcessaMap IA
+                                </strong>
+
+                                <span>
+                                    Assistente de acessibilidade
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <span class="status-online">
+                            ● Online
+                        </span>
+
+                    </div>
+
+
+                    <!-- CHAT -->
+
+                    <div
+                        id="chat"
+                        class="chat"
+                    >
+
+                        <div class="mensagem mensagem-ia">
+
+                            <strong>
+                                AcessaMap IA
+                            </strong>
+
+                            <p>
+                                Olá! 👋
+                            </p>
+
+                            <p>
+                                Posso ajudar você a encontrar
+                                e entender locais acessíveis.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- MENSAGEM -->
+
+                    <div class="area-mensagem">
+
+                        <input
+                            type="text"
+                            id="mensagem"
+                            placeholder="Pergunte sobre acessibilidade..."
+                            autocomplete="off"
+                        >
+
+
+                        <button
+                            id="enviar"
+                            type="button"
+                            aria-label="Enviar mensagem"
+                        >
+                            ➜
+                        </button>
+
+                    </div>
+
+
+                    <div class="aviso-ia">
+
+                        O assistente pode cometer erros.
+                        Verifique informações importantes.
+
+                    </div>
+
+                </div>
+
+            </details>
+
+        </section>
+
+    </main>
+
+
+    <!-- Leaflet -->
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    ></script>
+
+
+    <!-- JavaScript -->
+
+    <script
+        src="{{ url_for('static', path='main.js') }}"
+    ></script>
 
 </body>
 

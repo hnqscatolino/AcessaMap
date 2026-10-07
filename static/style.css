@@ -1,11 +1,1344 @@
-body {
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-#mapa {
-    width: 600px;
-    height: 600px;
 
-    margin: 30px auto;
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+
+body {
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background: #f5f7fb;
+
+    color: #1f2937;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   CABEÇALHO
+========================================================= */
+
+.topo {
+    height: 76px;
+
+    background: #ffffff;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    padding: 0 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    position: relative;
+
+    z-index: 1000;
+}
+
+
+.logo-area {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.logo-icone {
+    width: 44px;
+    height: 44px;
+
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #4361ee;
+
+    color: white;
+
+    font-size: 23px;
+    font-weight: 800;
+}
+
+
+.logo-area h1 {
+    color: #111827;
+
+    font-size: 21px;
+
+    line-height: 1.1;
+}
+
+
+.logo-area span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #6b7280;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   PERFIS
+========================================================= */
+
+.perfis-ativos {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    flex-wrap: wrap;
+}
+
+
+.perfil-chip {
+    padding: 7px 11px;
+
+    border-radius: 20px;
+
+    background: #eef2ff;
+
+    border: 1px solid #c7d2fe;
+
+    color: #3730a3;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   CONTEÚDO
+========================================================= */
+
+.conteudo {
+    height: calc(100vh - 76px);
+
+    display: flex;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   PAINEL ESQUERDO
+========================================================= */
+
+.painel {
+    width: 330px;
+    min-width: 330px;
+
+    height: 100%;
+
+    padding: 22px;
+
+    background: white;
+
+    border-right: 1px solid #e5e7eb;
+
+    overflow-y: auto;
+
+    position: relative;
+
+    z-index: 500;
+}
+
+
+.painel h2 {
+    color: #111827;
+
+    font-size: 22px;
+
+    margin-bottom: 5px;
+}
+
+
+.painel-subtitulo {
+    color: #6b7280;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+    margin-bottom: 20px;
+}
+
+
+/* =========================================================
+   PESQUISA
+========================================================= */
+
+.pesquisa {
+    width: 100%;
+
+    display: flex;
+
+    gap: 8px;
+
+    margin-bottom: 22px;
+}
+
+
+.pesquisa input {
+    flex: 1;
+
+    min-width: 0;
+
+    height: 42px;
+
+    padding: 0 12px;
+
+    border: 1px solid #cbd5e1;
+
+    border-radius: 10px;
+
+    background: white;
+
+    color: #111827;
+
+    font-size: 13px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.pesquisa input:focus {
+    border-color: #4361ee;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(67, 97, 238, 0.12);
+}
+
+
+.pesquisa button {
+    height: 42px;
+
+    padding: 0 16px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #4361ee;
+
+    color: white;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.15s ease;
+}
+
+
+.pesquisa button:hover {
+    background: #3651d4;
+}
+
+
+.pesquisa button:active {
+    transform: scale(0.97);
+}
+
+
+.pesquisa button:disabled {
+    opacity: 0.65;
+
+    cursor: wait;
+}
+
+
+/* =========================================================
+   INFORMAÇÕES DO LOCAL
+========================================================= */
+
+.informacoes-local {
+    border-top: 1px solid #e5e7eb;
+
+    padding-top: 18px;
+
+    padding-bottom: 30px;
+}
+
+
+.informacoes-local > h3 {
+    color: #374151;
+
+    font-size: 13px;
+
+    margin-bottom: 14px;
+}
+
+
+/* =========================================================
+   ESTADO INICIAL
+========================================================= */
+
+.estado-inicial {
+    padding: 25px 10px;
+
+    text-align: center;
+}
+
+
+.estado-inicial-icone {
+    font-size: 24px;
+
+    margin-bottom: 10px;
+}
+
+
+.estado-inicial p {
+    color: #9ca3af;
+
+    font-size: 11px;
+
+    line-height: 1.6;
+}
+
+
+.mensagem-inicial {
+    color: #9ca3af;
+
+    font-size: 11px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   RESULTADO DA PESQUISA
+========================================================= */
+
+.resultado-pesquisa {
+    padding: 13px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 10px;
+
+    background: #f8fafc;
+}
+
+
+.resultado-pesquisa strong {
+    display: block;
+
+    color: #334155;
+
+    font-size: 12px;
+
+    margin-bottom: 6px;
+}
+
+
+.resultado-pesquisa span {
+    display: block;
+
+    color: #94a3b8;
+
+    font-size: 10px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   CARREGAMENTO
+========================================================= */
+
+.estado-painel {
+    min-height: 100px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    text-align: center;
+
+    color: #94a3b8;
+
+    font-size: 11px;
+}
+
+
+.estado-icone {
+    font-size: 24px;
+}
+
+
+.carregando {
+    width: 26px;
+    height: 26px;
+
+    border-radius: 50%;
+
+    border: 3px solid #e5e7eb;
+
+    border-top-color: #4361ee;
+
+    animation: girar 0.7s linear infinite;
+}
+
+
+@keyframes girar {
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* =========================================================
+   CABEÇALHO DO LOCAL
+========================================================= */
+
+.local-detalhes {
+    width: 100%;
+}
+
+
+.local-cabecalho {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 10px;
+
+    margin-bottom: 10px;
+}
+
+
+.local-pin {
+    width: 35px;
+    height: 35px;
+
+    min-width: 35px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #eef2ff;
+
+    font-size: 16px;
+}
+
+
+.nome-local {
+    margin: 0 0 4px 0 !important;
+
+    color: #111827 !important;
+
+    font-size: 17px !important;
+}
+
+
+.local-tipo {
+    display: block;
+
+    color: #94a3b8;
+
+    font-size: 10px;
+
+    text-transform: capitalize;
+}
+
+
+.endereco-local {
+    margin-bottom: 17px;
+
+    padding-bottom: 14px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    color: #64748b;
+
+    font-size: 10px;
+
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   TÍTULO ACESSIBILIDADE
+========================================================= */
+
+.titulo-acessibilidade {
+    margin-bottom: 12px;
+}
+
+
+.titulo-acessibilidade strong {
+    display: block;
+
+    color: #111827;
+
+    font-size: 13px;
+}
+
+
+.titulo-acessibilidade span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #94a3b8;
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   CARDS DE ACESSIBILIDADE
+========================================================= */
+
+.acessibilidade-card {
+    width: 100%;
+
+    min-height: 60px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 9px;
+
+    padding: 10px 11px;
+
+    border: 2px solid transparent;
+
+    border-radius: 12px;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+
+.acessibilidade-card:hover {
+    transform: translateY(-1px);
+}
+
+
+.acessibilidade-icone {
+    width: 36px;
+    height: 36px;
+
+    min-width: 36px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    font-size: 17px;
+}
+
+
+.acessibilidade-texto {
+    flex: 1;
+
+    min-width: 0;
+}
+
+
+.acessibilidade-texto strong {
+    display: block;
+
+    margin-bottom: 3px;
+
+    font-size: 12px;
+}
+
+
+.acessibilidade-texto span {
+    display: block;
+
+    font-size: 10px;
+}
+
+
+.acessibilidade-status {
+    width: 29px;
+    height: 29px;
+
+    min-width: 29px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    font-size: 16px;
+
+    font-weight: 900;
+}
+
+
+/* =========================================================
+   VERDE - DISPONÍVEL
+========================================================= */
+
+.acessibilidade-sim {
+    background: #ecfdf5;
+
+    border-color: #22c55e;
+
+    box-shadow:
+        0 4px 13px
+        rgba(34, 197, 94, 0.11);
+}
+
+
+.acessibilidade-sim
+.acessibilidade-icone {
+    background: #dcfce7;
+
+    color: #15803d;
+}
+
+
+.acessibilidade-sim
+.acessibilidade-texto strong {
+    color: #166534;
+}
+
+
+.acessibilidade-sim
+.acessibilidade-texto span {
+    color: #15803d;
+}
+
+
+.acessibilidade-sim
+.acessibilidade-status {
+    background: #22c55e;
+
+    color: white;
+}
+
+
+/* =========================================================
+   VERMELHO - NÃO DISPONÍVEL
+========================================================= */
+
+.acessibilidade-nao {
+    background: #fef2f2;
+
+    border-color: #ef4444;
+
+    box-shadow:
+        0 4px 13px
+        rgba(239, 68, 68, 0.11);
+}
+
+
+.acessibilidade-nao
+.acessibilidade-icone {
+    background: #fee2e2;
+
+    color: #b91c1c;
+}
+
+
+.acessibilidade-nao
+.acessibilidade-texto strong {
+    color: #991b1b;
+}
+
+
+.acessibilidade-nao
+.acessibilidade-texto span {
+    color: #dc2626;
+}
+
+
+.acessibilidade-nao
+.acessibilidade-status {
+    background: #ef4444;
+
+    color: white;
+}
+
+
+/* =========================================================
+   BRANCO - NÃO INFORMADO
+========================================================= */
+
+.acessibilidade-desconhecido {
+    background: #ffffff;
+
+    border-color: #cbd5e1;
+
+    box-shadow:
+        0 4px 13px
+        rgba(15, 23, 42, 0.08);
+}
+
+
+.acessibilidade-desconhecido
+.acessibilidade-icone {
+    background: #f1f5f9;
+
+    color: #64748b;
+}
+
+
+.acessibilidade-desconhecido
+.acessibilidade-texto strong {
+    color: #334155;
+}
+
+
+.acessibilidade-desconhecido
+.acessibilidade-texto span {
+    color: #94a3b8;
+}
+
+
+.acessibilidade-desconhecido
+.acessibilidade-status {
+    background: white;
+
+    color: #64748b;
+
+    border: 2px solid #cbd5e1;
+}
+
+
+/* =========================================================
+   LEGENDA
+========================================================= */
+
+.legenda-status {
+    margin-top: 16px;
+
+    padding: 11px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 6px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 10px;
+}
+
+
+.legenda-status div {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    color: #64748b;
+
+    font-size: 9px;
+}
+
+
+.bolinha {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+}
+
+
+.bolinha-verde {
+    background: #22c55e;
+}
+
+
+.bolinha-vermelha {
+    background: #ef4444;
+}
+
+
+.bolinha-branca {
+    background: white;
+
+    border: 1px solid #94a3b8;
+}
+
+
+/* =========================================================
+   FONTE
+========================================================= */
+
+.fonte-informacao {
+    margin-top: 14px;
+
+    color: #94a3b8;
+
+    font-size: 9px;
+
+    text-align: center;
+}
+
+
+.fonte-informacao strong {
+    color: #64748b;
+}
+
+
+/* =========================================================
+   ÁREA DO MAPA
+========================================================= */
+
+.area-principal {
+    flex: 1;
+
+    min-width: 0;
+
+    position: relative;
+
+    overflow: hidden;
+
+    background: #e5e7eb;
+}
+
+
+.area-mapa {
+    position: absolute;
+
+    top: 0;
+    bottom: 0;
+    left: 0;
+
+    /*
+       Pequeno espaço no lado direito
+       para o botão do agente.
+    */
+
+    right: 85px;
+
+    transition:
+        right 0.3s ease;
+}
+
+
+#mapa {
+    width: 100%;
+    height: 100%;
+
+    background: #dbeafe;
+}
+
+
+/* Quando a IA abre */
+
+.area-principal:has(.agente-ia[open])
+.area-mapa {
+    right: 370px;
+}
+
+
+/* =========================================================
+   LEAFLET
+========================================================= */
+
+.leaflet-container {
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+}
+
+
+.leaflet-tooltip {
+    padding: 6px 9px;
+
+    border-radius: 7px;
+
+    font-size: 11px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   AGENTE IA
+========================================================= */
+
+.agente-ia {
+    position: absolute;
+
+    right: 20px;
+    bottom: 20px;
+
+    z-index: 1000;
+}
+
+
+.agente-ia summary {
+    list-style: none;
+}
+
+
+.agente-ia summary::-webkit-details-marker {
+    display: none;
+}
+
+
+/* =========================================================
+   BOTÃO IA
+========================================================= */
+
+.botao-agente {
+    width: 62px;
+    height: 62px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4361ee,
+            #4f46e5
+        );
+
+    color: white;
+
+    cursor: pointer;
+
+    user-select: none;
+
+    box-shadow:
+        0 9px 26px
+        rgba(67, 97, 238, 0.35);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.botao-agente:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 12px 30px
+        rgba(67, 97, 238, 0.4);
+}
+
+
+.icone-agente {
+    font-size: 18px;
+
+    font-weight: 800;
+}
+
+
+.agente-ia[open]
+.botao-agente {
+    display: none;
+}
+
+
+/* =========================================================
+   JANELA IA
+========================================================= */
+
+.janela-agente {
+    width: 335px;
+    height: 500px;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    background: white;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 18px 50px
+        rgba(15, 23, 42, 0.22);
+
+    animation:
+        abrirAgente
+        0.2s
+        ease;
+}
+
+
+@keyframes abrirAgente {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(12px)
+            scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+}
+
+
+/* =========================================================
+   CABEÇALHO IA
+========================================================= */
+
+.agente-header {
+    min-height: 68px;
+
+    padding: 12px 14px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4361ee,
+            #4f46e5
+        );
+
+    color: white;
+}
+
+
+.agente-identidade {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.agente-avatar {
+    width: 39px;
+    height: 39px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background:
+        rgba(255, 255, 255, 0.18);
+
+    font-size: 13px;
+
+    font-weight: 800;
+}
+
+
+.agente-identidade strong {
+    display: block;
+
+    font-size: 14px;
+}
+
+
+.agente-identidade span {
+    display: block;
+
+    margin-top: 3px;
+
+    font-size: 10px;
+
+    opacity: 0.85;
+}
+
+
+.status-online {
+    font-size: 10px;
+
+    opacity: 0.85;
+}
+
+
+/* =========================================================
+   CHAT
+========================================================= */
+
+.chat {
+    flex: 1;
+
+    padding: 15px;
+
+    overflow-y: auto;
+
+    background: #f8fafc;
+}
+
+
+.mensagem {
+    max-width: 85%;
+
+    margin-bottom: 12px;
+
+    padding: 10px 12px;
+
+    border-radius: 14px;
+
+    font-size: 13px;
+
+    line-height: 1.45;
+}
+
+
+.mensagem strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-size: 11px;
+}
+
+
+.mensagem p + p {
+    margin-top: 4px;
+}
+
+
+.mensagem-ia {
+    background: white;
+
+    color: #374151;
+
+    border: 1px solid #e5e7eb;
+
+    border-bottom-left-radius: 4px;
+}
+
+
+.mensagem-usuario {
+    margin-left: auto;
+
+    background: #4361ee;
+
+    color: white;
+
+    border-bottom-right-radius: 4px;
+}
+
+
+/* =========================================================
+   CAMPO DA IA
+========================================================= */
+
+.area-mensagem {
+    padding: 11px;
+
+    display: flex;
+
+    gap: 8px;
+
+    background: white;
+
+    border-top: 1px solid #e5e7eb;
+}
+
+
+.area-mensagem input {
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 10px 13px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 20px;
+
+    outline: none;
+
+    font-size: 12px;
+}
+
+
+.area-mensagem input:focus {
+    border-color: #4361ee;
+}
+
+
+.area-mensagem button {
+    width: 39px;
+    height: 39px;
+
+    min-width: 39px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #4361ee;
+
+    color: white;
+
+    cursor: pointer;
+
+    font-size: 17px;
+}
+
+
+.area-mensagem button:hover {
+    background: #3651d4;
+}
+
+
+.aviso-ia {
+    padding: 0 12px 9px;
+
+    background: white;
+
+    color: #94a3b8;
+
+    font-size: 9px;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE
+========================================================= */
+
+@media (max-width: 1050px) {
+
+    .area-principal:has(.agente-ia[open])
+    .area-mapa {
+        right: 85px;
+    }
+
+
+    .janela-agente {
+        width:
+            min(
+                335px,
+                calc(100vw - 40px)
+            );
+    }
+
+}
+
+
+@media (max-width: 780px) {
+
+    .topo {
+        height: auto;
+
+        min-height: 70px;
+
+        padding: 12px 16px;
+
+        gap: 10px;
+
+        flex-wrap: wrap;
+    }
+
+
+    .conteudo {
+        height:
+            calc(100vh - 95px);
+    }
+
+
+    .painel {
+        width: 280px;
+        min-width: 280px;
+
+        padding: 16px;
+    }
+
+
+    .area-mapa {
+        right: 0;
+    }
+
+
+    .area-principal:has(.agente-ia[open])
+    .area-mapa {
+        right: 0;
+    }
+
+
+    .agente-ia {
+        right: 14px;
+        bottom: 14px;
+    }
+
+
+    .janela-agente {
+        height: 450px;
+    }
+
 }
