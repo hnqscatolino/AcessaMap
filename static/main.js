@@ -1,63 +1,67 @@
-// ======================================================
-// ACESSAMAP - MAIN.JS
-// ======================================================
 
+/* =========================================
+   ACESSAMAP - GOOGLE MAPS + GOOGLE PLACES
+========================================= */
 
-// ======================================================
-// MAPA
-// ======================================================
-
-const mapa = L.map("mapa").setView(
-    [-15.793889, -47.882778],
-    11
-);
-
-
-L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    {
-        attribution: "&copy; OpenStreetMap contributors"
-    }
-).addTo(mapa);
-
-
-// ======================================================
 // VARIÁVEIS
-// ======================================================
-
-let locaisEncontrados = [];
+let mapaGoogle = null;
+let MarcadorGoogle = null;
 let marcadores = [];
-let localSelecionado = null;
+let buscaAtual = 0;
+let selecaoAtual = 0;
+
+// ELEMENTOS HTML
+const campoPesquisa = document.getElementById("campo-pesquisa");
+const botaoPesquisar = document.getElementById("botao-pesquisar");
+const dadosLocal = document.getElementById("dados-local");
 
 
-// ======================================================
-// ELEMENTOS DA TELA
-// ======================================================
+// =========================================
+// INICIAR GOOGLE MAPS
+// =========================================
 
-const campoPesquisa =
-    document.getElementById("campo-pesquisa");
+window.iniciarMapaGoogle = async function () {
+    try {
+        const { Map } = await google.maps.importLibrary("maps");
 
-const botaoPesquisar =
-    document.getElementById("botao-pesquisar");
+        const { AdvancedMarkerElement } =
+            await google.maps.importLibrary("marker");
 
-const dadosLocal =
-    document.getElementById("dados-local");
+        MarcadorGoogle = AdvancedMarkerElement;
+
+        mapaGoogle = new Map(
+            document.getElementById("mapa"),
+            {
+                center: {
+                    lat: -15.793889,
+                    lng: -47.882778
+                },
+                zoom: 11,
+                mapId: "DEMO_MAP_ID",
+                mapTypeControl: true,
+                streetViewControl: true,
+                fullscreenControl: true,
+                zoomControl: true
+            }
+        );
+
+        console.log("AcessaMap: Google Maps carregado!");
+
+    } catch (erro) {
+        console.error("Erro ao carregar Google Maps:", erro);
+
+        dadosLocal.textContent =
+            "Erro ao carregar o mapa. Verifique o console.";
+    }
+};
 
 
-// ======================================================
-// PROTEGER TEXTO RECEBIDO DA API
-// ======================================================
+// =========================================
+// PROTEGER TEXTOS DA API
+// =========================================
 
 function escaparHTML(texto) {
-
-    if (
-        texto === null ||
-        texto === undefined
-    ) {
-        return "";
-    }
-
-    return String(texto)
+    return String(texto ?? "")
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
@@ -66,414 +70,209 @@ function escaparHTML(texto) {
 }
 
 
-// ======================================================
-// PESQUISAR LOCAIS
-// ======================================================
-
-async function pesquisarLocais() {
-
-    const pesquisa =
-        campoPesquisa.value.trim();
-
-
-    if (pesquisa.length < 2) {
-
-        alert(
-            "Digite pelo menos 2 caracteres."
-        );
-
-        return;
-    }
-
-
-    botaoPesquisar.disabled = true;
-    botaoPesquisar.textContent = "Buscando...";
-
-    localSelecionado = null;
-
-
-    dadosLocal.innerHTML = `
-        <div class="estado-painel">
-            <div class="carregando"></div>
-
-            <p>
-                Pesquisando locais...
-            </p>
-        </div>
-    `;
-
-
-    try {
-
-        const resposta = await fetch(
-            `/api/buscar-locais?q=${encodeURIComponent(pesquisa)}`
-        );
-
-
-        if (!resposta.ok) {
-
-            throw new Error(
-                "Erro ao pesquisar locais"
-            );
-        }
-
-
-        const dados =
-            await resposta.json();
-
-
-        // ----------------------------------------------
-        // REMOVER POSSÍVEIS DUPLICADOS
-        // ----------------------------------------------
-
-        const ids = new Set();
-
-
-        locaisEncontrados =
-            dados.filter(local => {
-
-                if (ids.has(local.id)) {
-                    return false;
-                }
-
-                ids.add(local.id);
-
-                return true;
-            });
-
-
-        // ----------------------------------------------
-        // NENHUM RESULTADO
-        // ----------------------------------------------
-
-        if (
-            locaisEncontrados.length === 0
-        ) {
-
-            limparMarcadores();
-
-
-            dadosLocal.innerHTML = `
-                <div class="estado-painel">
-
-                    <span class="estado-icone">
-                        📍
-                    </span>
-
-                    <p>
-                        Nenhum local encontrado
-                        no Distrito Federal.
-                    </p>
-
-                </div>
-            `;
-
-            return;
-        }
-
-
-        // ----------------------------------------------
-        // MOSTRAR RESULTADOS
-        // ----------------------------------------------
-
-        mostrarLocais(
-            locaisEncontrados
-        );
-
-
-        dadosLocal.innerHTML = `
-            <div class="resultado-pesquisa">
-
-                <strong>
-                    ${locaisEncontrados.length}
-                    resultado(s) encontrado(s)
-                </strong>
-
-                <span>
-                    Clique em um marcador do mapa
-                    para visualizar as informações
-                    de acessibilidade.
-                </span>
-
-            </div>
-        `;
-
-
-    } catch (erro) {
-
-        console.error(
-            "Erro na pesquisa:",
-            erro
-        );
-
-
-        limparMarcadores();
-
-
-        dadosLocal.innerHTML = `
-            <div class="estado-painel">
-
-                <span class="estado-icone">
-                    ⚠️
-                </span>
-
-                <p>
-                    Não foi possível realizar
-                    a pesquisa.
-                </p>
-
-            </div>
-        `;
-
-
-    } finally {
-
-        botaoPesquisar.disabled = false;
-        botaoPesquisar.textContent = "Buscar";
-    }
-}
-
-
-// ======================================================
-// MOSTRAR LOCAIS NO MAPA
-// ======================================================
-
-function mostrarLocais(locais) {
-
-    limparMarcadores();
-
-
-    if (locais.length === 0) {
-        return;
-    }
-
-
-    const grupoMarcadores =
-        L.featureGroup();
-
-
-    locais.forEach(local => {
-
-        const latitude =
-            Number(local.latitude);
-
-        const longitude =
-            Number(local.longitude);
-
-
-        if (
-            Number.isNaN(latitude) ||
-            Number.isNaN(longitude)
-        ) {
-            return;
-        }
-
-
-        const marcador =
-            L.marker([
-                latitude,
-                longitude
-            ]);
-
-
-        marcador.addTo(mapa);
-
-        grupoMarcadores.addLayer(
-            marcador
-        );
-
-
-        // Nome ao passar o mouse
-        marcador.bindTooltip(
-            escaparHTML(local.nome),
-            {
-                direction: "top",
-                offset: [0, -8]
-            }
-        );
-
-
-        // Clique no marcador
-        marcador.on(
-            "click",
-            () => {
-
-                mostrarInformacoes(
-                    local
-                );
-
-            }
-        );
-
-
-        marcadores.push(
-            marcador
-        );
-    });
-
-
-    // Ajusta mapa aos resultados
-    if (marcadores.length > 0) {
-
-        mapa.fitBounds(
-            grupoMarcadores.getBounds(),
-            {
-                padding: [45, 45],
-                maxZoom: 16
-            }
-        );
-    }
-}
-
-
-// ======================================================
+// =========================================
 // LIMPAR MARCADORES
-// ======================================================
+// =========================================
 
 function limparMarcadores() {
-
-    marcadores.forEach(
-        marcador => {
-
-            mapa.removeLayer(
-                marcador
-            );
-
-        }
-    );
-
+    marcadores.forEach(marcador => {
+        marcador.map = null;
+    });
 
     marcadores = [];
 }
 
 
-// ======================================================
-// CARD DE ACESSIBILIDADE
-// ======================================================
+// =========================================
+// PESQUISAR LOCAIS
+// =========================================
 
-function criarInformacao(
-    icone,
-    titulo,
-    valor
-) {
+async function pesquisarLocais() {
 
-    // ==================================================
-    // SIM
-    // ==================================================
+    const pesquisa = campoPesquisa.value.trim();
+
+    if (pesquisa.length < 2) {
+        alert("Digite pelo menos 2 caracteres.");
+        return;
+    }
+
+    if (!mapaGoogle || !MarcadorGoogle) {
+        dadosLocal.textContent = "O mapa ainda está carregando.";
+        return;
+    }
+
+    if (botaoPesquisar.disabled) return;
+
+    const numeroBusca = ++buscaAtual;
+    ++selecaoAtual;
+
+    botaoPesquisar.disabled = true;
+    botaoPesquisar.textContent = "Buscando...";
+
+    dadosLocal.innerHTML = `
+        <div class="estado-painel">
+            <div class="carregando"></div>
+            <p>Pesquisando estabelecimentos...</p>
+        </div>
+    `;
+
+    try {
+        const resposta = await fetch(
+            `/api/google/buscar-locais?q=${encodeURIComponent(pesquisa)}`
+        );
+
+        if (!resposta.ok) {
+            throw new Error("Erro HTTP: " + resposta.status);
+        }
+
+        const locais = await resposta.json();
+
+        if (numeroBusca !== buscaAtual) return;
+
+        limparMarcadores();
+
+        if (locais.length === 0) {
+            dadosLocal.innerHTML = `
+                <p class="mensagem-inicial">
+                    Nenhum estabelecimento encontrado.
+                </p>
+            `;
+            return;
+        }
+
+        mostrarLocais(locais);
+
+    } catch (erro) {
+        console.error("Erro na pesquisa:", erro);
+
+        if (numeroBusca === buscaAtual) {
+            limparMarcadores();
+            dadosLocal.innerHTML = `
+                <p class="mensagem-inicial">
+                    Não foi possível pesquisar.
+                    Tente novamente.
+                </p>
+            `;
+        }
+
+    } finally {
+        if (numeroBusca === buscaAtual) {
+            botaoPesquisar.disabled = false;
+            botaoPesquisar.textContent = "Buscar";
+        }
+    }
+}
+
+
+// =========================================
+// MOSTRAR MARCADORES NO MAPA
+// =========================================
+
+function mostrarLocais(locais) {
+
+    const limites = new google.maps.LatLngBounds();
+    let quantidade = 0;
+    let primeiraPosicao = null;
+
+    for (const local of locais) {
+
+        const latitude = Number(local.latitude);
+        const longitude = Number(local.longitude);
+
+        if (
+            !Number.isFinite(latitude) ||
+            !Number.isFinite(longitude)
+        ) {
+            continue;
+        }
+
+        const posicao = {
+            lat: latitude,
+            lng: longitude
+        };
+
+        const marcador = new MarcadorGoogle({
+            map: mapaGoogle,
+            position: posicao,
+            title: local.nome || "Estabelecimento"
+        });
+
+        marcador.addListener("click", () => {
+            mostrarInformacoes(local);
+        });
+
+        marcadores.push(marcador);
+        limites.extend(posicao);
+
+        primeiraPosicao ??= posicao;
+        quantidade++;
+    }
+
+    if (quantidade === 0) {
+        dadosLocal.textContent =
+            "Não encontramos coordenadas válidas.";
+        return;
+    }
+
+    if (quantidade === 1) {
+        mapaGoogle.setCenter(primeiraPosicao);
+        mapaGoogle.setZoom(16);
+    } else {
+        mapaGoogle.fitBounds(limites, 45);
+    }
+
+    dadosLocal.innerHTML = `
+        <div class="resultado-pesquisa">
+            <strong>
+                ${quantidade} estabelecimento(s) encontrado(s)
+            </strong>
+
+            <span>
+                Clique em um marcador para visualizar
+                as informações de acessibilidade.
+            </span>
+        </div>
+    `;
+}
+
+
+// =========================================
+// CRIAR CARDS DE ACESSIBILIDADE
+// =========================================
+
+function criarCard(icone, titulo, valor) {
+
+    let classe = "acessibilidade-desconhecido";
+    let descricao = "Não informado";
+    let simbolo = "?";
 
     if (valor === true) {
-
-        return `
-            <div class="
-                acessibilidade-card
-                acessibilidade-sim
-            ">
-
-                <div class="acessibilidade-icone">
-                    ${icone}
-                </div>
-
-
-                <div class="acessibilidade-texto">
-
-                    <strong>
-                        ${titulo}
-                    </strong>
-
-                    <span>
-                        Disponível
-                    </span>
-
-                </div>
-
-
-                <div
-                    class="acessibilidade-status"
-                    title="Disponível"
-                >
-                    ✓
-                </div>
-
-            </div>
-        `;
+        classe = "acessibilidade-sim";
+        descricao = "Disponível";
+        simbolo = "✓";
     }
-
-
-    // ==================================================
-    // NÃO
-    // ==================================================
 
     if (valor === false) {
-
-        return `
-            <div class="
-                acessibilidade-card
-                acessibilidade-nao
-            ">
-
-                <div class="acessibilidade-icone">
-                    ${icone}
-                </div>
-
-
-                <div class="acessibilidade-texto">
-
-                    <strong>
-                        ${titulo}
-                    </strong>
-
-                    <span>
-                        Não disponível
-                    </span>
-
-                </div>
-
-
-                <div
-                    class="acessibilidade-status"
-                    title="Não disponível"
-                >
-                    ✕
-                </div>
-
-            </div>
-        `;
+        classe = "acessibilidade-nao";
+        descricao = "Não disponível";
+        simbolo = "✕";
     }
 
-
-    // ==================================================
-    // NÃO INFORMADO
-    // ==================================================
-
     return `
-        <div class="
-            acessibilidade-card
-            acessibilidade-desconhecido
-        ">
+        <div class="acessibilidade-card ${classe}">
 
             <div class="acessibilidade-icone">
                 ${icone}
             </div>
 
-
             <div class="acessibilidade-texto">
-
-                <strong>
-                    ${titulo}
-                </strong>
-
-                <span>
-                    Não informado
-                </span>
-
+                <strong>${titulo}</strong>
+                <span>${descricao}</span>
             </div>
 
-
-            <div
-                class="acessibilidade-status"
-                title="Não informado"
-            >
-                ?
+            <div class="acessibilidade-status"
+                 aria-label="${descricao}">
+                ${simbolo}
             </div>
 
         </div>
@@ -481,208 +280,207 @@ function criarInformacao(
 }
 
 
-// ======================================================
-// MOSTRAR TODAS AS INFORMAÇÕES DO LOCAL
-// ======================================================
+// =========================================
+// MOSTRAR INFORMAÇÕES AO CLICAR
+// =========================================
 
-function mostrarInformacoes(local) {
+async function mostrarInformacoes(local) {
 
-    localSelecionado =
-        local;
+    const placeId = local.google_place_id;
 
+    if (!placeId) {
+        dadosLocal.textContent =
+            "Este local não possui um ID do Google.";
+        return;
+    }
 
-    const acessibilidade =
-        local.acessibilidade || {};
+    const numeroSelecao = ++selecaoAtual;
 
+    const nome = escaparHTML(local.nome || "Local");
+    const endereco = escaparHTML(
+        local.endereco || "Endereço não informado"
+    );
 
     dadosLocal.innerHTML = `
-
         <div class="local-detalhes">
 
-
-            <!-- NOME -->
             <div class="local-cabecalho">
-
-                <span class="local-pin">
-                    📍
-                </span>
+                <span class="local-pin">📍</span>
 
                 <div>
-
-                    <h3 class="nome-local">
-
-                        ${escaparHTML(
-                            local.nome ||
-                            "Local"
-                        )}
-
-                    </h3>
-
+                    <h3 class="nome-local">${nome}</h3>
                     <span class="local-tipo">
-
-                        ${escaparHTML(
-                            local.tipo ||
-                            "Estabelecimento"
-                        )}
-
+                        ${escaparHTML(local.tipo || "Estabelecimento")}
                     </span>
-
                 </div>
-
             </div>
 
+            <p class="endereco-local">${endereco}</p>
 
-            <!-- ENDEREÇO -->
-            <p class="endereco-local">
-
-                ${escaparHTML(
-                    local.endereco ||
-                    "Endereço não informado"
-                )}
-
-            </p>
-
-
-            <!-- TÍTULO -->
-            <div class="titulo-acessibilidade">
-
-                <strong>
-                    Acessibilidade
-                </strong>
-
-                <span>
-                    Informações disponíveis sobre este local
-                </span>
-
-            </div>
-
-
-            <!-- ENTRADA ACESSÍVEL -->
-            ${criarInformacao(
-
-                "♿",
-
-                "Entrada acessível",
-
-                acessibilidade
-                    .entrada_acessivel
-
-            )}
-
-
-            <!-- RAMPA -->
-            ${criarInformacao(
-
-                "↗",
-
-                "Rampa de acesso",
-
-                acessibilidade
-                    .rampa
-
-            )}
-
-
-            <!-- ELEVADOR -->
-            ${criarInformacao(
-
-                "🛗",
-
-                "Elevador",
-
-                acessibilidade
-                    .elevador
-
-            )}
-
-
-            <!-- BANHEIRO -->
-            ${criarInformacao(
-
-                "🚻",
-
-                "Banheiro acessível",
-
-                acessibilidade
-                    .banheiro_acessivel
-
-            )}
-
-
-            <!-- PISO TÁTIL -->
-            ${criarInformacao(
-
-                "👁",
-
-                "Piso tátil",
-
-                acessibilidade
-                    .piso_tatil
-
-            )}
-
-
-            <!-- LEGENDA -->
-            <div class="legenda-status">
-
-                <div>
-                    <span class="bolinha bolinha-verde"></span>
-                    Disponível
-                </div>
-
-                <div>
-                    <span class="bolinha bolinha-vermelha"></span>
-                    Não disponível
-                </div>
-
-                <div>
-                    <span class="bolinha bolinha-branca"></span>
-                    Não informado
-                </div>
-
-            </div>
-
-
-            <!-- FONTE -->
-            <div class="fonte-informacao">
-
-                Fonte dos dados:
-
-                <strong>
-                    ${escaparHTML(
-                        local.fonte ||
-                        "OpenStreetMap"
-                    )}
-                </strong>
-
+            <div class="estado-painel">
+                <div class="carregando"></div>
+                <p>Consultando acessibilidade...</p>
             </div>
 
         </div>
     `;
+
+    try {
+        const resposta = await fetch(
+            `/api/google/local/${encodeURIComponent(placeId)}/acessibilidade`
+        );
+
+        if (!resposta.ok) {
+            throw new Error(
+                "Erro ao consultar detalhes: " + resposta.status
+            );
+        }
+
+        const dados = await resposta.json();
+
+        if (numeroSelecao !== selecaoAtual) return;
+
+        dadosLocal.innerHTML = `
+            <div class="local-detalhes">
+
+                <div class="local-cabecalho">
+                    <span class="local-pin">📍</span>
+
+                    <div>
+                        <h3 class="nome-local">${nome}</h3>
+                        <span class="local-tipo">
+                            ${escaparHTML(local.tipo || "Estabelecimento")}
+                        </span>
+                    </div>
+                </div>
+
+                <p class="endereco-local">
+                    ${endereco}
+                </p>
+
+                <div class="titulo-acessibilidade">
+                    <strong>Acessibilidade</strong>
+                    <span>
+                        Informações disponíveis sobre este local
+                    </span>
+                </div>
+
+                ${criarCard(
+                    "♿",
+                    "Entrada acessível",
+                    dados.entrada_acessivel
+                )}
+
+                ${criarCard(
+                    "🚻",
+                    "Banheiro acessível",
+                    dados.banheiro_acessivel
+                )}
+
+                ${criarCard(
+                    "🅿️",
+                    "Estacionamento acessível",
+                    dados.estacionamento_acessivel
+                )}
+
+                ${criarCard(
+                    "🪑",
+                    "Assentos acessíveis",
+                    dados.assentos_acessiveis
+                )}
+
+                ${criarCard(
+                    "↗️",
+                    "Rampa",
+                    dados.rampa
+                )}
+
+                ${criarCard(
+                    "🛗",
+                    "Elevador",
+                    dados.elevador
+                )}
+
+                ${criarCard(
+                    "👁️",
+                    "Piso tátil",
+                    dados.piso_tatil
+                )}
+
+                <div class="legenda-status">
+
+                    <div>
+                        <span class="bolinha bolinha-verde"></span>
+                        Disponível
+                    </div>
+
+                    <div>
+                        <span class="bolinha bolinha-vermelha"></span>
+                        Não disponível
+                    </div>
+
+                    <div>
+                        <span class="bolinha bolinha-branca"></span>
+                        Não informado
+                    </div>
+
+                </div>
+
+                <div class="fonte-informacao">
+                    Fonte: Google Places.
+                    Alguns dados podem estar indisponíveis.
+                </div>
+
+            </div>
+        `;
+
+    } catch (erro) {
+        console.error("Erro na acessibilidade:", erro);
+
+        if (numeroSelecao === selecaoAtual) {
+            dadosLocal.innerHTML = `
+                <div class="local-detalhes">
+                    <h3 class="nome-local">${nome}</h3>
+                    <p class="endereco-local">${endereco}</p>
+
+                    <p class="mensagem-inicial">
+                        Não foi possível consultar
+                        a acessibilidade deste local.
+                    </p>
+                </div>
+            `;
+        }
+    }
 }
 
 
-// ======================================================
+// =========================================
 // EVENTOS
-// ======================================================
+// =========================================
 
-
-// Botão Buscar
 botaoPesquisar.addEventListener(
     "click",
     pesquisarLocais
 );
 
-
-// Enter no campo
 campoPesquisa.addEventListener(
     "keydown",
     evento => {
-
         if (evento.key === "Enter") {
-
             pesquisarLocais();
         }
-
     }
 );
+
+
+// =========================================
+// FECHAR POP-UP DA IA
+// =========================================
+
+const fecharAgente = document.getElementById("fechar-agente");
+
+if (fecharAgente) {
+    fecharAgente.addEventListener("click", () => {
+        document.querySelector(".agente-ia").open = false;
+    });
+}

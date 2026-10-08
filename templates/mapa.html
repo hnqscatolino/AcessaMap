@@ -1,154 +1,117 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <title>AcessaMap - Google Maps</title>
 
-    <title>AcessaMap - Mapa</title>
-
-    <!-- Leaflet -->
     <link
         rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        href="{{ url_for('static', path='style.css') }}?v=google3"
     >
 
-    <!-- CSS -->
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', path='style.css') }}"
-    >
+    <style>
+        #mapa {
+            width: 100%;
+            height: 100%;
+        }
+
+        .agente-fechar {
+            border: none;
+            background: transparent;
+            color: white;
+            font-size: 25px;
+            cursor: pointer;
+            padding: 5px;
+        }
+    </style>
 </head>
-
 
 <body data-perfis="{{ perfis | join(',') }}">
 
-    <!-- ==================================================
+    <!-- ==========================
          CABEÇALHO
-    =================================================== -->
+    ========================== -->
 
     <header class="topo">
 
         <div class="logo-area">
 
-            <div class="logo-icone">
-                A
-            </div>
+            <div class="logo-icone">A</div>
 
             <div>
                 <h1>AcessaMap</h1>
-
-                <span>
-                    Acessibilidade ao seu alcance
-                </span>
+                <span>Acessibilidade ao seu alcance</span>
             </div>
 
         </div>
 
-
-        <!-- PERFIS ESCOLHIDOS -->
-
         <div class="perfis-ativos">
 
-            {% if perfis %}
+            {% for perfil in perfis %}
 
-                {% for perfil in perfis %}
+                <span class="perfil-chip">
 
-                    <span class="perfil-chip">
+                    {% if perfil == "cadeirante" %}
+                        ♿ Cadeirante
 
-                        {% if perfil == "cadeirante" %}
+                    {% elif perfil == "cego" %}
+                        👁 Pessoa cega
 
-                            ♿ Cadeirante
+                    {% elif perfil == "tea" %}
+                        🧩 TEA
 
-                        {% elif perfil == "cego" %}
+                    {% endif %}
 
-                            👁 Pessoa cega
+                </span>
 
-                        {% elif perfil == "tea" %}
-
-                            🧩 TEA
-
-                        {% else %}
-
-                            {{ perfil }}
-
-                        {% endif %}
-
-                    </span>
-
-                {% endfor %}
-
-            {% endif %}
+            {% endfor %}
 
         </div>
 
     </header>
 
 
-    <!-- ==================================================
+    <!-- ==========================
          CONTEÚDO
-    =================================================== -->
+    ========================== -->
 
     <main class="conteudo">
 
-
-        <!-- ==================================================
-             PAINEL ESQUERDO
-        =================================================== -->
+        <!-- PAINEL ESQUERDO -->
 
         <aside class="painel">
 
-            <h2>
-                Encontrar locais
-            </h2>
-
+            <h2>Encontrar locais</h2>
 
             <p class="painel-subtitulo">
-                Encontre locais acessíveis em Brasília.
+                Encontre locais acessíveis no Distrito Federal.
             </p>
-
-
-            <!-- PESQUISA -->
 
             <div class="pesquisa">
 
                 <input
-                    type="text"
+                    type="search"
                     id="campo-pesquisa"
                     placeholder="Pesquisar local..."
                     autocomplete="off"
+                    aria-label="Pesquisar locais"
                 >
 
-
-                <button
-                    id="botao-pesquisar"
-                    type="button"
-                >
+                <button id="botao-pesquisar" type="button">
                     Buscar
                 </button>
 
             </div>
 
+            <section class="informacoes-local">
 
-            <!-- ==================================================
-                 INFORMAÇÕES
-            =================================================== -->
+                <h3>Informações do local</h3>
 
-            <section
-                id="informacoes-local"
-                class="informacoes-local"
-            >
-
-                <h3>
-                    Informações do local
-                </h3>
-
-
-                <div id="dados-local">
+                <div id="dados-local" aria-live="polite">
 
                     <div class="estado-inicial">
 
@@ -156,10 +119,9 @@
                             📍
                         </div>
 
-
                         <p>
                             Pesquise um local e clique em um
-                            marcador para visualizar suas
+                            marcador para consultar suas
                             informações de acessibilidade.
                         </p>
 
@@ -172,49 +134,32 @@
         </aside>
 
 
-        <!-- ==================================================
-             ÁREA PRINCIPAL
-        =================================================== -->
+        <!-- ÁREA PRINCIPAL -->
 
         <section class="area-principal">
 
-
-            <!-- MAPA -->
-
             <div class="area-mapa">
-
-                <div id="mapa"></div>
-
+                <div
+                    id="mapa"
+                    role="region"
+                    aria-label="Mapa de Brasília"
+                ></div>
             </div>
 
 
-            <!-- ==================================================
-                 AGENTE IA
-            =================================================== -->
+            <!-- AGENTE IA -->
 
             <details class="agente-ia">
 
-
-                <!-- BOTÃO -->
-
                 <summary
                     class="botao-agente"
-                    aria-label="Abrir AcessaMap IA"
+                    aria-label="Abrir assistente de IA"
                 >
-
-                    <span class="icone-agente">
-                        IA
-                    </span>
-
+                    <span class="icone-agente">IA</span>
                 </summary>
 
 
-                <!-- JANELA -->
-
                 <div class="janela-agente">
-
-
-                    <!-- CABEÇALHO -->
 
                     <div class="agente-header">
 
@@ -224,84 +169,66 @@
                                 IA
                             </div>
 
-
                             <div>
-
-                                <strong>
-                                    AcessaMap IA
-                                </strong>
-
+                                <strong>AcessaMap IA</strong>
                                 <span>
                                     Assistente de acessibilidade
                                 </span>
-
                             </div>
 
                         </div>
 
-
-                        <span class="status-online">
-                            ● Online
-                        </span>
+                        <button
+                            type="button"
+                            id="fechar-agente"
+                            class="agente-fechar"
+                            aria-label="Fechar assistente"
+                        >
+                            ×
+                        </button>
 
                     </div>
 
 
-                    <!-- CHAT -->
-
-                    <div
-                        id="chat"
-                        class="chat"
-                    >
+                    <div class="chat" id="chat">
 
                         <div class="mensagem mensagem-ia">
 
-                            <strong>
-                                AcessaMap IA
-                            </strong>
+                            <strong>AcessaMap IA</strong>
+
+                            <p>Olá! 👋</p>
 
                             <p>
-                                Olá! 👋
-                            </p>
-
-                            <p>
-                                Posso ajudar você a encontrar
-                                e entender locais acessíveis.
+                                Posso ajudar você a entender
+                                a acessibilidade dos locais.
                             </p>
 
                         </div>
 
                     </div>
 
-
-                    <!-- MENSAGEM -->
 
                     <div class="area-mensagem">
 
                         <input
                             type="text"
                             id="mensagem"
-                            placeholder="Pergunte sobre acessibilidade..."
+                            placeholder="Digite sua pergunta..."
                             autocomplete="off"
                         >
 
-
                         <button
-                            id="enviar"
                             type="button"
-                            aria-label="Enviar mensagem"
+                            id="enviar"
+                            aria-label="Enviar pergunta"
                         >
                             ➜
                         </button>
 
                     </div>
 
-
                     <div class="aviso-ia">
-
-                        O assistente pode cometer erros.
-                        Verifique informações importantes.
-
+                        Integração com IA em desenvolvimento.
                     </div>
 
                 </div>
@@ -313,17 +240,627 @@
     </main>
 
 
-    <!-- Leaflet -->
+    <!-- ==========================
+         JAVASCRIPT DO GOOGLE MAPS
+    ========================== -->
+
+    <script>
+
+        let mapaGoogle = null;
+        let MarcadorGoogle = null;
+        let marcadores = [];
+
+        let numeroBusca = 0;
+        let numeroSelecao = 0;
+
+        const campoPesquisa =
+            document.getElementById("campo-pesquisa");
+
+        const botaoPesquisar =
+            document.getElementById("botao-pesquisar");
+
+        const dadosLocal =
+            document.getElementById("dados-local");
+
+
+        // ======================================
+        // INICIALIZAR GOOGLE MAPS
+        // ======================================
+
+        window.iniciarMapaGoogle = async function () {
+
+            try {
+
+                const { Map } =
+                    await google.maps.importLibrary("maps");
+
+                const { AdvancedMarkerElement } =
+                    await google.maps.importLibrary("marker");
+
+                MarcadorGoogle = AdvancedMarkerElement;
+
+                mapaGoogle = new Map(
+                    document.getElementById("mapa"),
+                    {
+                        center: {
+                            lat: -15.793889,
+                            lng: -47.882778
+                        },
+
+                        zoom: 11,
+
+                        mapId: "DEMO_MAP_ID",
+
+                        mapTypeControl: true,
+                        fullscreenControl: true,
+                        streetViewControl: true,
+                        zoomControl: true
+                    }
+                );
+
+                console.log(
+                    "AcessaMap: Google Maps carregado!"
+                );
+
+            } catch (erro) {
+
+                console.error(
+                    "Erro ao inicializar mapa:",
+                    erro
+                );
+
+                dadosLocal.textContent =
+                    "Não foi possível carregar o Google Maps.";
+            }
+
+        };
+
+
+        // ======================================
+        // PROTEÇÃO DE TEXTO
+        // ======================================
+
+        function escaparHTML(valor) {
+
+            return String(valor ?? "")
+
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#039;");
+
+        }
+
+
+        // ======================================
+        // LIMPAR MARCADORES
+        // ======================================
+
+        function limparMarcadores() {
+
+            marcadores.forEach(marcador => {
+                marcador.map = null;
+            });
+
+            marcadores = [];
+
+        }
+
+
+        // ======================================
+        // PESQUISAR LOCAIS
+        // ======================================
+
+        async function pesquisarLocais() {
+
+            const termo = campoPesquisa.value.trim();
+
+            if (termo.length < 2) {
+                alert("Digite pelo menos dois caracteres.");
+                return;
+            }
+
+            if (!mapaGoogle || !MarcadorGoogle) {
+
+                dadosLocal.textContent =
+                    "O Google Maps ainda está carregando.";
+
+                return;
+            }
+
+            if (botaoPesquisar.disabled) return;
+
+            const busca = ++numeroBusca;
+            ++numeroSelecao;
+
+            botaoPesquisar.disabled = true;
+            botaoPesquisar.textContent = "Buscando...";
+
+            dadosLocal.innerHTML = `
+                <div class="estado-painel">
+                    <div class="carregando"></div>
+                    <p>Pesquisando estabelecimentos...</p>
+                </div>
+            `;
+
+            try {
+
+                const resposta = await fetch(
+                    "/api/google/buscar-locais?q=" +
+                    encodeURIComponent(termo)
+                );
+
+                if (!resposta.ok) {
+                    throw new Error(
+                        "Erro na pesquisa: " + resposta.status
+                    );
+                }
+
+                const locais = await resposta.json();
+
+                if (busca !== numeroBusca) return;
+
+                limparMarcadores();
+
+                if (!Array.isArray(locais) || locais.length === 0) {
+
+                    dadosLocal.innerHTML = `
+                        <p class="mensagem-inicial">
+                            Nenhum local encontrado.
+                        </p>
+                    `;
+
+                    return;
+                }
+
+                mostrarLocais(locais);
+
+            } catch (erro) {
+
+                console.error(erro);
+
+                if (busca === numeroBusca) {
+
+                    dadosLocal.textContent =
+                        "Não foi possível realizar a pesquisa.";
+                }
+
+            } finally {
+
+                if (busca === numeroBusca) {
+
+                    botaoPesquisar.disabled = false;
+                    botaoPesquisar.textContent = "Buscar";
+                }
+
+            }
+
+        }
+
+
+        // ======================================
+        // MOSTRAR LOCAIS
+        // ======================================
+
+        function mostrarLocais(locais) {
+
+            const limites =
+                new google.maps.LatLngBounds();
+
+            let quantidade = 0;
+            let primeiraPosicao = null;
+
+            for (const local of locais) {
+
+                const latitude = Number(local.latitude);
+                const longitude = Number(local.longitude);
+
+                if (
+                    !Number.isFinite(latitude) ||
+                    !Number.isFinite(longitude)
+                ) {
+                    continue;
+                }
+
+                const posicao = {
+                    lat: latitude,
+                    lng: longitude
+                };
+
+                const marcador = new MarcadorGoogle({
+                    map: mapaGoogle,
+                    position: posicao,
+                    title: local.nome || "Local"
+                });
+
+                marcador.addListener("click", () => {
+
+                    mostrarInformacoes(local);
+
+                });
+
+                marcadores.push(marcador);
+
+                limites.extend(posicao);
+
+                primeiraPosicao ??= posicao;
+
+                quantidade++;
+            }
+
+            if (quantidade === 0) {
+
+                dadosLocal.textContent =
+                    "Nenhuma localização válida encontrada.";
+
+                return;
+            }
+
+            if (quantidade === 1) {
+
+                mapaGoogle.setCenter(primeiraPosicao);
+                mapaGoogle.setZoom(16);
+
+            } else {
+
+                mapaGoogle.fitBounds(limites, 45);
+
+            }
+
+            dadosLocal.innerHTML = `
+                <div class="resultado-pesquisa">
+
+                    <strong>
+                        ${quantidade} locais encontrados
+                    </strong>
+
+                    <span>
+                        Clique em um marcador para
+                        consultar a acessibilidade.
+                    </span>
+
+                </div>
+            `;
+
+        }
+
+
+        // ======================================
+        // CRIAR CARD DE ACESSIBILIDADE
+        // ======================================
+
+        function criarCard(icone, titulo, valor) {
+
+            let classe = "acessibilidade-desconhecido";
+            let descricao = "Não informado";
+            let simbolo = "?";
+
+            if (valor === true) {
+
+                classe = "acessibilidade-sim";
+                descricao = "Disponível";
+                simbolo = "✓";
+
+            } else if (valor === false) {
+
+                classe = "acessibilidade-nao";
+                descricao = "Não disponível";
+                simbolo = "✕";
+
+            }
+
+            return `
+                <div class="acessibilidade-card ${classe}">
+
+                    <div class="acessibilidade-icone">
+                        ${icone}
+                    </div>
+
+                    <div class="acessibilidade-texto">
+
+                        <strong>${titulo}</strong>
+                        <span>${descricao}</span>
+
+                    </div>
+
+                    <div class="acessibilidade-status">
+                        ${simbolo}
+                    </div>
+
+                </div>
+            `;
+
+        }
+
+
+        // ======================================
+        // MOSTRAR ACESSIBILIDADE
+        // ======================================
+
+        async function mostrarInformacoes(local) {
+
+            const placeId = local.google_place_id;
+
+            if (!placeId) {
+
+                dadosLocal.textContent =
+                    "Identificador do local indisponível.";
+
+                return;
+            }
+
+            const selecao = ++numeroSelecao;
+
+            const nome = escaparHTML(
+                local.nome || "Estabelecimento"
+            );
+
+            const endereco = escaparHTML(
+                local.endereco || "Endereço não informado"
+            );
+
+            const tipo = escaparHTML(
+                local.tipo || "Estabelecimento"
+            );
+
+            dadosLocal.innerHTML = `
+                <div class="local-detalhes">
+
+                    <h3 class="nome-local">${nome}</h3>
+
+                    <p class="endereco-local">
+                        ${endereco}
+                    </p>
+
+                    <div class="estado-painel">
+
+                        <div class="carregando"></div>
+
+                        <p>
+                            Consultando acessibilidade...
+                        </p>
+
+                    </div>
+
+                </div>
+            `;
+
+            try {
+
+                const resposta = await fetch(
+                    "/api/google/local/" +
+                    encodeURIComponent(placeId) +
+                    "/acessibilidade"
+                );
+
+                if (!resposta.ok) {
+
+                    throw new Error(
+                        "Erro nos detalhes: " + resposta.status
+                    );
+                }
+
+                const dados = await resposta.json();
+
+                if (selecao !== numeroSelecao) return;
+
+                dadosLocal.innerHTML = `
+                    <div class="local-detalhes">
+
+                        <div class="local-cabecalho">
+
+                            <span class="local-pin">📍</span>
+
+                            <div>
+
+                                <h3 class="nome-local">
+                                    ${nome}
+                                </h3>
+
+                                <span class="local-tipo">
+                                    ${tipo}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <p class="endereco-local">
+                            ${endereco}
+                        </p>
+
+                        <div class="titulo-acessibilidade">
+
+                            <strong>
+                                Acessibilidade do local
+                            </strong>
+
+                            <span>
+                                Informações fornecidas
+                                pelo Google Places
+                            </span>
+
+                        </div>
+
+                        ${criarCard(
+                            "♿",
+                            "Entrada acessível",
+                            dados.entrada_acessivel
+                        )}
+
+                        ${criarCard(
+                            "🚻",
+                            "Banheiro acessível",
+                            dados.banheiro_acessivel
+                        )}
+
+                        ${criarCard(
+                            "🅿️",
+                            "Estacionamento acessível",
+                            dados.estacionamento_acessivel
+                        )}
+
+                        ${criarCard(
+                            "🪑",
+                            "Assentos acessíveis",
+                            dados.assentos_acessiveis
+                        )}
+
+                        ${criarCard(
+                            "↗️",
+                            "Rampa",
+                            dados.rampa
+                        )}
+
+                        ${criarCard(
+                            "🛗",
+                            "Elevador",
+                            dados.elevador
+                        )}
+
+                        ${criarCard(
+                            "👁️",
+                            "Piso tátil",
+                            dados.piso_tatil
+                        )}
+
+                        <div class="legenda-status">
+
+                            <div>
+                                <span class="bolinha bolinha-verde"></span>
+                                Disponível
+                            </div>
+
+                            <div>
+                                <span class="bolinha bolinha-vermelha"></span>
+                                Não disponível
+                            </div>
+
+                            <div>
+                                <span class="bolinha bolinha-branca"></span>
+                                Não informado
+                            </div>
+
+                        </div>
+
+                        <div class="fonte-informacao">
+
+                            Fonte: Google Places.
+                            Dados podem estar incompletos.
+
+                        </div>
+
+                    </div>
+                `;
+
+            } catch (erro) {
+
+                console.error(
+                    "Erro na acessibilidade:",
+                    erro
+                );
+
+                if (selecao === numeroSelecao) {
+
+                    dadosLocal.innerHTML = `
+                        <div class="local-detalhes">
+
+                            <h3 class="nome-local">${nome}</h3>
+
+                            <p class="endereco-local">
+                                ${endereco}
+                            </p>
+
+                            <p class="mensagem-inicial">
+                                Não foi possível consultar
+                                os dados de acessibilidade.
+                            </p>
+
+                        </div>
+                    `;
+                }
+
+            }
+
+        }
+
+
+        // ======================================
+        // EVENTOS DE PESQUISA
+        // ======================================
+
+        botaoPesquisar.addEventListener(
+            "click",
+            pesquisarLocais
+        );
+
+        campoPesquisa.addEventListener(
+            "keydown",
+            evento => {
+
+                if (evento.key === "Enter") {
+                    pesquisarLocais();
+                }
+
+            }
+        );
+
+
+        // ======================================
+        // AGENTE DE IA
+        // ======================================
+
+        document.getElementById("fechar-agente")
+            .addEventListener("click", () => {
+
+                document.querySelector(".agente-ia").open = false;
+
+            });
+
+        const inputIA = document.getElementById("mensagem");
+        const enviarIA = document.getElementById("enviar");
+        const chatIA = document.getElementById("chat");
+
+        function enviarMensagemIA() {
+
+            const texto = inputIA.value.trim();
+
+            if (!texto) return;
+
+            const mensagemUsuario = document.createElement("div");
+            mensagemUsuario.className = "mensagem mensagem-usuario";
+            mensagemUsuario.textContent = texto;
+
+            chatIA.appendChild(mensagemUsuario);
+
+            const resposta = document.createElement("div");
+            resposta.className = "mensagem mensagem-ia";
+            resposta.textContent =
+                "O assistente de IA ainda está em desenvolvimento.";
+
+            chatIA.appendChild(resposta);
+
+            inputIA.value = "";
+            chatIA.scrollTop = chatIA.scrollHeight;
+        }
+
+        enviarIA.addEventListener("click", enviarMensagemIA);
+
+        inputIA.addEventListener("keydown", evento => {
+            if (evento.key === "Enter") {
+                enviarMensagemIA();
+            }
+        });
+
+    </script>
+
+
+    <!-- GOOGLE MAPS API -->
 
     <script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    ></script>
-
-
-    <!-- JavaScript -->
-
-    <script
-        src="{{ url_for('static', path='main.js') }}"
+        async
+        src="https://maps.googleapis.com/maps/api/js?key={{ chave_mapa | urlencode }}&loading=async&callback=iniciarMapaGoogle&v=weekly"
     ></script>
 
 </body>

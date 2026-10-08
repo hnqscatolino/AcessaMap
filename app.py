@@ -9,6 +9,13 @@ import asyncio
 import json
 import httpx
 
+from config import MAP_PROVIDER, GOOGLE_PLACES_API_KEY, GOOGLE_MAPS_BROWSER_KEY
+
+from services.google_places import (
+    pesquisar_google,
+    consultar_acessibilidade_google
+)
+
 
 # =========================================================
 # CONFIGURAÇÃO
@@ -700,16 +707,13 @@ def pagina_mapa(
 
 
     return templates.TemplateResponse(
-
-        request=request,
-
-        name="mapa.html",
-
-        context={
-            "perfis":
-                perfil
-        }
-    )
+    request=request,
+    name="mapa.html",
+    context={
+        "perfis": perfil,
+        "chave_mapa": GOOGLE_MAPS_BROWSER_KEY
+    }
+)
 
 
 # =========================================================
@@ -792,6 +796,149 @@ async def buscar_locais(
         resultado_nominatim,
 
         resultado_photon
+    )
+
+
+# =========================================================
+# STATUS DAS APIS
+# =========================================================
+
+@app.get("/api/status")
+def status_apis():
+
+    return {
+        "projeto": "AcessaMap",
+        "provedor": MAP_PROVIDER,
+        "google_configurado": bool(GOOGLE_PLACES_API_KEY),
+        "google_ativo": (
+            MAP_PROVIDER == "google"
+            and bool(GOOGLE_PLACES_API_KEY)
+        )
+    }
+
+
+# =========================================================
+# VERIFICAR SE O GOOGLE ESTÁ ATIVO
+# =========================================================
+
+def verificar_google():
+
+    if MAP_PROVIDER != "google":
+        raise HTTPException(
+            status_code=503,
+            detail="Google Places ainda não ativado"
+        )
+
+    if not GOOGLE_PLACES_API_KEY:
+        raise HTTPException(
+            status_code=503,
+            detail="Chave da API do Google não configurada"
+        )
+
+
+# =========================================================
+# PESQUISA DO GOOGLE PLACES
+# =========================================================
+
+@app.get("/api/google/buscar-locais")
+async def buscar_locais_google(
+    q: str = Query(..., min_length=2, max_length=120)
+):
+
+    verificar_google()
+
+    try:
+        resultados = await pesquisar_google(q.strip())
+
+    except httpx.HTTPError:
+        raise HTTPException(
+            status_code=502,
+            detail="Falha na consulta ao Google Places"
+        )
+
+    locais = []
+
+    for lugar in resultados:
+
+        localizacao = lugar.get("location", {})
+
+        place_id = lugar.get("id")
+
+        if not place_id:
+            continue
+
+        locais.append({
+            "id": f"google-{place_id}",
+
+            "google_place_id": place_id,
+
+            "nome": lugar.get(
+                "displayName", {}
+            ).get("text", "Local sem nome"),
+
+            "endereco": lugar.get(
+                "formattedAddress",
+                "Endereço não informado"
+            ),
+
+            "latitude": localizacao.get("latitude"),
+
+            "longitude": localizacao.get("longitude"),
+
+            "tipo": lugar.get("primaryType"),
+
+            "fonte": "Google Places",
+
+            "acessibilidade": {
+                "entrada_acessivel": None,
+                "rampa": None,
+                "elevador": None,
+                "banheiro_acessivel": None,
+                "piso_tatil": None
+            }
+        })
+
+    return locais
+
+
+# =========================================================
+# DETALHES DE ACESSIBILIDADE GOOGLE
+# =========================================================
+
+@app.get(
+    "/api/google/local/{place_id}/acessibilidade"
+)
+async def acessibilidade_google(place_id: str):
+
+    verificar_google()
+
+    try:
+        resultado = await consultar_acessibilidade_google(
+            place_id
+        )
+
+        return resultado
+
+    except httpx.HTTPError:
+        raise HTTPException(
+            status_code=502,
+            detail="Falha ao consultar acessibilidade"
+        )
+
+
+
+@app.get("/mapa-google", response_class=HTMLResponse)
+def pagina_mapa_google(
+    request: Request,
+    perfil: list[str] = Query(default=[])
+):
+    return templates.TemplateResponse(
+        request=request,
+        name="mapa_google.html",
+        context={
+            "perfis": perfil,
+            "chave_mapa": GOOGLE_MAPS_BROWSER_KEY
+        }
     )
 
 
